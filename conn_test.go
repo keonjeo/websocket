@@ -268,10 +268,6 @@ func TestConn(t *testing.T) {
 func TestWasm(t *testing.T) {
 	t.Parallel()
 
-	if os.Getenv("CI") != "" {
-		t.Skip("skipping on CI")
-	}
-
 	var wg sync.WaitGroup
 	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		wg.Add(1)
@@ -301,12 +297,12 @@ func TestWasm(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	cmd := exec.CommandContext(ctx, "go", "test", "-exec=wasmbrowsertest", "./...")
+	cmd := exec.CommandContext(ctx, "go", "test", "-v", "-exec=wasmbrowsertest", "./...")
 	cmd.Env = append(os.Environ(), "GOOS=js", "GOARCH=wasm", fmt.Sprintf("WS_ECHO_SERVER_URL=%v", wstest.URL(s)))
 
 	b, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("wasm test binary failed: %v:\n%s", err, b)
+		t.Fatalf("wasm test binary failed %q: %v:\n%s", cmd.Args, err, b)
 	}
 }
 
