@@ -25,7 +25,7 @@ jobs:
     - name: Test
       before_script:
         - sudo apt-get install -y chromium-browser
-        - go get github.com/agnivade/wasmbrowsertest
+        - go get -u github.com/agnivade/wasmbrowsertest
         - go get github.com/mattn/goveralls
       script: make -j16 test
 
